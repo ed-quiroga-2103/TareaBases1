@@ -10,6 +10,8 @@ def linesToList(path):
         if line:                  
             nameList.append(line)
 
+    file.close()
+
     return nameList
 
 def randPickNames(nameList, num):
@@ -54,7 +56,7 @@ def createEmployeeAerolinea(nameList, lastNameList, idNum):
     return (idNum,name,lastname1,lastname2,salary,identification,job,code)
 
 
-def createEmployeeAeropuerto(nameList, lastNameList,idNum):
+def createEmployeeAeropuerto(nameList, lastNameList, idNum):
 
     name = choice(nameList)
     lastname1 = choice(lastNameList)
@@ -83,16 +85,16 @@ def createAeropuerto(name, idNum):
     for i in range(8):
         phone += str(choice(range(10)))
 
-    code = name[0].upper() + name [1].upper() + name[2].upper()
+    code = name[0].upper() + name [1].upper() + name[2].upper() + phone[0] + phone[1]
 
     sched = choice(["De 5 A.M. a 1 A.M.", "De 7 A.M. a 7 P.M.", "De 4 A.M. a 12 M.N.", "24/7"])
 
-    return (idNum,name,phone,location,hours,code)
+    return (idNum,name,phone,location,sched,code)
 
 
 def createAerolinea(name, idNum):
 
-    code = name[0].upper() + name [1].upper() + name[2].upper()
+    code = name[0].upper() + name [1].upper() + name[2].upper() + str(idNum)
 
     return (idNum,code,name)
 
@@ -166,7 +168,7 @@ def createControlador(idNum):
 
 def createEmpleadoAerolinea(idEmpl, idAero, job):
 
-    sched = choice(["De 5 A.M. a 1 A.M.", "De 7 A.M. a 7 P.M.", "De 4 A.M. a 12 M.N.", "24/7"])
+    sched = choice(["De 5 A.M. a 1 A.M.", "De 7 A.M. a 7 P.M.", "De 4 A.M. a 12 M.N."])
 
     return (idEmpl, idAero, sched, job)
 
@@ -175,5 +177,112 @@ def createEmpleadoAeropuerto(idEmpl, idAero, job):
     address = choice(["Alajuela", "Cartago", "San José", "Heredia","Puntarenas","Guanacaste","Limon"])
 
     return (idEmpl, idAero, address, job)
+
+
+
+def getAeropuertosAndAerolineas():
+
+    querryList1 = []
+    querryList2 = []
+
+    fileAerolineas = "aerolineas.txt"
+    fileAeropuertos = "aeropuertos.txt"
+
+    listAerolineas = randPickNamesNoRepeat(linesToList(fileAerolineas),8)
+    listAeropuertos = randPickNamesNoRepeat(linesToList(fileAeropuertos),30)
+
+    for i in range(8):
+
+        querry = createAerolinea(listAerolineas[i], i+1)
+
+        querryList1.append(querry)
+
+    for i in range(30):
+
+        querry = createAeropuerto(listAeropuertos[i], i+1)
+
+        querryList2.append(querry)
+
+    return [querryList1, querryList2]
+
+def getEmpleadosAeropuerto(numOfEmpleados):
+
+    querryList1 = []
+    querryList2 = []
+
+    idNum = 0
+
+    for i in range(30):
+        for j in range(numOfEmpleados):
+            idNum+=1
+            querry1 = createEmployeeAeropuerto(linesToList("nombres.txt"),linesToList("apellidos.txt"),idNum)
+            querryList1.append(querry1)
+
+
+            querry2 = createEmpleadoAeropuerto(idNum,i+1, querry1[-2])
+            querryList2.append(querry2)
+
+    return (querryList1,querryList2)
+
+def getEmpleadosAerolinea(numOfEmpleados):
+
+    querryList1 = []
+    querryList2 = []
+
+    idNum = 1500
+
+    for i in range(8):
+        for j in range(numOfEmpleados):
+            idNum+=1
+            querry1 = createEmployeeAerolinea(linesToList("nombres.txt"),linesToList("apellidos.txt"),idNum)
+            querryList1.append(querry1)
+
+
+            querry2 = createEmpleadoAerolinea(idNum,i+1, querry1[-2])
+            querryList2.append(querry2)
+
+    return (querryList1,querryList2)
+""" 
+file = open("empleadosAerolinea.txt", "w+")
+
+file.write("INSERT INTO Empleado VALUES\n")
+
+empAeropuerto = getEmpleadosAeropuerto(50) 
+empAerolinea = getEmpleadosAerolinea(35) 
+
+for i in empAeropuerto[0]:
+
+    file.write(str(i))
+    file.write(",\n")
+
+for i in empAerolinea[0]:
+
+    file.write(str(i))
+    file.write(",\n")
+
+file.write("\n\n-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n\n")
+
+file.write("INSERT INTO EmpleadoAeropuerto VALUES\n")
+
+for i in empAeropuerto[1]:
+
+    file.write(str(i))
+    file.write(",\n")
+
+file.write("\n\n-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n\n")
+
+file.write("INSERT INTO EmpleadoAerolinea VALUES\n")
+
+for i in empAerolinea[1]:
+
+    file.write(str(i))
+    file.write(",\n")
+
+
+
+file.close()
+ """
+for i in getAeropuertosAndAerolineas()[1]:
+    print(i,",")
 
 
