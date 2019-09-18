@@ -74,7 +74,7 @@
    Codigo TEXT NOT NULL,
    Nombre TEXT NOT NULL,
    Apellido1 TEXT NOT NULL,
-   Apellido2 TEXT NOT NULL,
+   Apellido2 TEXT ,
    InfoPasaporte TEXT NOT NULL,
    NumeroTelefono TEXT NOT NULL,
 
@@ -149,7 +149,7 @@
     CREATE TABLE IF NOT EXISTS ControladorVuelo --
 (
     IdVuelo INTEGER,
-    IdControlador INTEGER NOT NULL,
+    IdEmpleado INTEGER NOT NULL,
     CodigoAvion TEXT NOT NULL,
     CodigoComunicacion TEXT NOT NULL,
     CodigoVuelo TEXT NOT NULL,
@@ -157,7 +157,7 @@
     PosicionActual TEXT NOT NULL,
 
 
-    FOREIGN KEY (IdControlador) REFERENCES Controlador (IdControlador)
+    FOREIGN KEY (IdEmpleado) REFERENCES Empleado (IdEmpleado)
 );
 
 
