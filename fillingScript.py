@@ -1,12 +1,6 @@
 from random import choice
 import string
 
-"""
-Done: Aeropuerto, Aerolinea, Empleado, EmpleadoAerolinea,
-    EmpleadoAeropuerto, Aviones, Bodega, Taller
-Missing: Vuelo*, Pasajero*, Equipaje*, Controlador*, 
-    ControladorAvion
-"""
 
 def linesToList(path):
     file = open(path,"r")
@@ -103,13 +97,14 @@ def createAerolinea(name, idNum):
     return (idNum,code,name)
 
 def getAerolineaAeropuerto():
-
+    querryList = []
     for i in range(30):
-        for j in range(8):
-
-            querry = (j+1,i+1)
-            print(querry,",")
-
+        for j in range(choice(range(15))+1):
+            
+            querry = (choice(range(25))+1, i+1)
+            querryList.append(querry)
+    return querryList
+            
 def createModelos():
     for i in range(500):
         model = str(choice(range(10))) + str(choice(range(10)))+ str(choice(range(10))) +"-"+ str(choice(range(10)))
@@ -141,7 +136,7 @@ def createVuelo(idNum, idAero, idAvion, origin, destiny):
     
     date = "2019-"+ str(choice(range(12))+1)+ "-"+ str(choice(range(31))+ 1)
 
-    ind = choice(range(5))
+    ind = choice(range(4))
 
     iniTimes = ["01:00:00", "13:45:00", "17:00:00", "19:00:00"]
     finTimes = ["05:30:00", "17:00:00", "23:00:00", "22:45:00"] 
@@ -154,6 +149,23 @@ def createVuelo(idNum, idAero, idAvion, origin, destiny):
 
     return (idNum, idAero, idAvion, num, destiny, origin, datetime1, datetime2, price, state)
 
+def getVuelos():
+    querryList = []
+    for i in range(300):
+        
+        idAvion = choice(range(80))+1
+        idAero = choice(range(25))+1
+
+        origin = choice(linesToList("aeropuertos.txt"))
+        destiny = choice(linesToList("aeropuertos.txt"))
+
+        while origin == destiny:
+            destiny = choice(linesToList("aeropuertos.txt"))    
+
+        querry = createVuelo(i+1, idAero, idAvion, origin, destiny)
+        querryList.append(querry)
+    return querryList
+
 def createPasajero(idNum, idVuelo, nameList, lastNameList):
 
     numVuelo = idVuelo
@@ -161,7 +173,7 @@ def createPasajero(idNum, idVuelo, nameList, lastNameList):
     name = choice(nameList)
     lastname1 = choice(lastNameList)
     lastname2 = choice(lastNameList)
-    code = numVuelo + name[0].upper() + lastname1[0].upper() + lastname2[0].upper()
+    code = str(numVuelo) + name[0].upper() + lastname1[0].upper() + lastname2[0].upper()
     passport = ""
     for i in range(8):
         passport += str(choice(range(10)))
@@ -174,12 +186,44 @@ def createPasajero(idNum, idVuelo, nameList, lastNameList):
 
 def createEquipaje(idNum, idPasajero, pasCode):
 
-    code = idNum + pasCode
+    code = str(idNum) + pasCode
 
-    weight = choice(range(50))
+    weight = choice(range(50))+1
 
     return (idNum, idPasajero, code, weight)
 
+def getPasajeros():
+
+    querryLists = ([],[])
+    equipajeId = 0
+
+    for i in range(1000):
+        querry1 = createPasajero(i+1, choice(range(300))+1,linesToList("nombres.txt"), linesToList("apellidos.txt"))
+        querryLists[0].append(querry1)
+
+        for j in range(querry1[3]):
+            equipajeId+=1
+
+            querry2 = createEquipaje(equipajeId,i+1,querry1[4])
+
+            querryLists[1].append(querry2)
+    
+    file = open("pasajerosEquipaje.txt", "w+")
+
+    file.write("\nINSERT INTO Pasajero VALUES\n")
+
+    for i in querryLists[0]:
+        file.write(str(i)+",\n")
+
+    file.write("\nINSERT INTO Equipaje VALUES\n")
+
+    for i in querryLists[1]:
+        file.write(str(i)+",\n")
+
+    file.close()
+
+getPasajeros()
+        
 def createControlador(idNum):
     return (idNum)
 
@@ -203,10 +247,10 @@ def getAeropuertosAndAerolineas():
     fileAerolineas = "aerolineas.txt"
     fileAeropuertos = "aeropuertos.txt"
 
-    listAerolineas = randPickNamesNoRepeat(linesToList(fileAerolineas),8)
+    listAerolineas = randPickNamesNoRepeat(linesToList(fileAerolineas),25)
     listAeropuertos = randPickNamesNoRepeat(linesToList(fileAeropuertos),30)
 
-    for i in range(8):
+    for i in range(25):
 
         querry = createAerolinea(listAerolineas[i], i+1)
 
@@ -255,9 +299,47 @@ def getEmpleadosAerolinea():
         querryList1.append(querry1)
 
         
-        aeroId = choice(range(8))
+        aeroId = choice(range(25))
 
         querry2 = createEmpleadoAerolinea(idNum,aeroId+1, querry1[-2])
+        querryList2.append(querry2)
+    
+    return (querryList1,querryList2)
+
+def createEmployeeControlador(nameList, lastNameList, idNum):
+    name = choice(nameList)
+    lastname1 = choice(lastNameList)
+    lastname2 = choice(lastNameList)
+    salary = choice([1000,2000,5000,10000,30000,50000])
+
+    identification = ""
+
+    for i in range(8):
+        identification += str(choice(range(10)))
+    
+    job = "Controlador"
+
+    code = job[0].upper() + job[1].upper() + lastname1[0] + lastname2[0] + identification[-2] + identification[-1]
+
+    return (idNum,name,lastname1,lastname2,salary,identification,job,code)
+
+def createEmpleadosControlador():
+
+    querryList1 = []
+    querryList2 = []
+
+    idNum = 500
+
+    for i in range(300):
+        
+        idNum+=1
+        querry1 = createEmployeeControlador(linesToList("nombres.txt"),linesToList("apellidos.txt"),idNum)
+        querryList1.append(querry1)
+
+        
+        aeroId = choice(range(30))
+
+        querry2 = createEmpleadoAeropuerto(idNum,aeroId+1, querry1[-2])
         querryList2.append(querry2)
     
     return (querryList1,querryList2)
@@ -267,13 +349,12 @@ def getAviones(numAviones):
     manufactList = linesToList("fabricantes.txt")
     modelList = randPickNamesNoRepeat(linesToList("modelos.txt"), 80)
     idNum = 0
-    for i in range(8):
+    for i in range(25):
 
         for j in range(numAviones):
             idNum+=1
             querry = createAvion(idNum, choice(manufactList),i+1, choice(modelList))
             querryList.append(querry)
-            print(querry,",")
     return querryList
 
 def getTallerAndBodega(avionesList):
@@ -322,7 +403,7 @@ def createFactura(idNum, idAero, code):
     return (idNum, idAero, code, parts, cost, datetime1, datetime2, damage)
 
 def getBodega(avionesList):
-
+    querryList = []
     while(avionesList != []):
 
         for i in range(30): 
@@ -335,12 +416,15 @@ def getBodega(avionesList):
                 avionesList.remove(avion)
 
                 querry = (avion[0], i+1)
-
-                print(querry,",")
+                querryList.append(querry)
+        return querryList
 
 def getTaller(avionesList):
 
+    querryList = []
+
     while(avionesList != []):
+
 
             for i in range(30): 
                 
@@ -352,13 +436,57 @@ def getTaller(avionesList):
                     avionesList.remove(avion)
 
                     querry = createFactura(avion[0],i+1,avion[2])
+                    querryList.append(querry)
+    return querryList
 
-                    print(querry,",")
+def createControladorVuelo(avionesList, vuelosList):
+    
+    file = open("ControladorVuelo.txt", "w+")
 
-empleadosAerolinea = getEmpleadosAeropuerto()
+    file.write("INSERT INTO ControladorVuelo VALUES\n")
 
-for i in empleadosAerolinea[0]:
-    print(i,",")
 
-for i in empleadosAerolinea[1]:
-    print(i,",")
+    for i in range(80):
+        
+        idContr = 500 + choice(range(300))+1
+
+        size = len(avionesList)
+        codigoAvion = getCodigoAvionFromVuelo(i+1,avionesList)
+        codigoCom = codigoAvion
+        codigoVuelo = i+1
+        horaLlegada = vuelosList[i][7].split()[1]
+        pos = choice(linesToList("posiciones.txt"))
+
+        querry = str((i+1, idContr, codigoAvion, codigoCom,codigoVuelo, horaLlegada, pos))
+
+        file.write(querry +",\n")
+
+    file.close()
+
+def getCodigoAvionFromVuelo(ind, listaAviones):
+    for avion in listaAviones:
+        if avion[0] == ind:
+            print(avion[2])
+            return avion[2]
+    return "UNASSIGNED"
+
+aerolineas = getAeropuertosAndAerolineas()[0]
+
+empleados = getEmpleadosAerolinea()
+
+aerolineaAeropuerto = getAerolineaAeropuerto()
+
+empleadosAerolinea = empleados[1]
+
+empleados = empleados[0]
+
+aviones = getAviones(80)
+
+vuelos = getVuelos()
+
+bodegas = getBodega(aviones)
+
+talleres = getTaller(aviones)
+
+createControladorVuelo(aviones,vuelos)
+
