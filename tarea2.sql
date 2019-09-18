@@ -163,3 +163,32 @@
 
 -- Consultas:
 
+--  TOP 10 de aerolíneas con mayor cantidad de empleados.
+
+SELECT A.Nombre, COUNT(EA.IdEmpleado) AS Empleados
+FROM Empleado E
+    INNER JOIN EmpleadoAerolinea EA ON E.IdEmpleado = EA.IdEmpleado
+    INNER JOIN Aerolinea A ON A.IdAerolinea = EA.IdAerolinea 
+GROUP BY A.Nombre
+ORDER BY Empleados DESC
+LIMIT 10;
+
+-- TOP 10 de aeropuertos con más Aerolíneas.
+
+SELECT AP.Nombre, COUNT(AA.IdAerolinea) AS Aerolineas
+FROM Aeropuerto AP
+    INNER JOIN AerolineaAeropuerto AA ON AP.IdAeropuerto = AA.IdAeropuerto
+    INNER JOIN Aerolinea AL ON AL.IdAerolinea = AA.IdAerolinea 
+GROUP BY AP.Nombre
+ORDER BY Aerolineas DESC
+LIMIT 10;
+
+-- Aerolineas y Aeropuertos donde se encuentran
+
+SELECT AL.Nombre, AP.Nombre
+FROM Aerolinea AL
+    INNER JOIN AerolineaAeropuerto AA ON AL.IdAerolinea = AA.IdAerolinea
+    INNER JOIN Aeropuerto AP ON AP.IdAeropuerto = AA.IdAeropuerto
+GROUP BY AL.Nombre;
+
+
