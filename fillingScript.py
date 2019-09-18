@@ -1,6 +1,13 @@
 from random import choice
 import string
 
+"""
+Done: Aeropuerto, Aerolinea, Empleado, EmpleadoAerolinea,
+    EmpleadoAeropuerto, Aviones, Bodega, Taller
+Missing: Vuelo*, Pasajero*, Equipaje*, Controlador*, 
+    ControladorAvion
+"""
+
 def linesToList(path):
     file = open(path,"r")
     nameList = []
@@ -55,7 +62,6 @@ def createEmployeeAerolinea(nameList, lastNameList, idNum):
 
     return (idNum,name,lastname1,lastname2,salary,identification,job,code)
 
-
 def createEmployeeAeropuerto(nameList, lastNameList, idNum):
 
     name = choice(nameList)
@@ -74,7 +80,6 @@ def createEmployeeAeropuerto(nameList, lastNameList, idNum):
 
     return (idNum,name,lastname1,lastname2,salary,identification,job,code)
 
-
 def createAeropuerto(name, idNum):
     location = name
 
@@ -91,21 +96,33 @@ def createAeropuerto(name, idNum):
 
     return (idNum,name,phone,location,sched,code)
 
-
 def createAerolinea(name, idNum):
 
     code = name[0].upper() + name [1].upper() + name[2].upper() + str(idNum)
 
     return (idNum,code,name)
 
-def createAvion(idNum, manufact, idAero, aeroCode):
+def getAerolineaAeropuerto():
 
-    model = ""
+    for i in range(30):
+        for j in range(8):
 
-    for i in range(4):
-        model += choice(string.ascii_uppercase)
+            querry = (j+1,i+1)
+            print(querry,",")
 
-    model += manufact[0].upper() + manufact[1].upper()
+def createModelos():
+    for i in range(500):
+        model = str(choice(range(10))) + str(choice(range(10)))+ str(choice(range(10))) +"-"+ str(choice(range(10)))
+        
+        for i in range(4):
+            model += choice(string.ascii_uppercase)
+        
+        print(model)
+        model = ""
+
+def createAvion(idNum, manufact, idAero, model):
+
+    model = manufact[0].upper() + manufact[1].upper() + model
 
     schedCapacity = choice(range(1,4))
     tripCapacity = choice(range(500,2500))
@@ -178,8 +195,6 @@ def createEmpleadoAeropuerto(idEmpl, idAero, job):
 
     return (idEmpl, idAero, address, job)
 
-
-
 def getAeropuertosAndAerolineas():
 
     querryList1 = []
@@ -205,84 +220,145 @@ def getAeropuertosAndAerolineas():
 
     return [querryList1, querryList2]
 
-def getEmpleadosAeropuerto(numOfEmpleados):
+def getEmpleadosAeropuerto():
+
+    querryList1 = []
+    querryList2 = []
+
+    idNum = 200
+
+    for i in range(300):
+        
+        idNum+=1
+        querry1 = createEmployeeAeropuerto(linesToList("nombres.txt"),linesToList("apellidos.txt"),idNum)
+        querryList1.append(querry1)
+
+        
+        aeroId = choice(range(30))
+
+        querry2 = createEmpleadoAeropuerto(idNum,aeroId+1, querry1[-2])
+        querryList2.append(querry2)
+    
+    return (querryList1,querryList2)
+
+def getEmpleadosAerolinea():
 
     querryList1 = []
     querryList2 = []
 
     idNum = 0
 
-    for i in range(30):
-        for j in range(numOfEmpleados):
-            idNum+=1
-            querry1 = createEmployeeAeropuerto(linesToList("nombres.txt"),linesToList("apellidos.txt"),idNum)
-            querryList1.append(querry1)
+    for i in range(200):
+        
+        idNum+=1
+        querry1 = createEmployeeAerolinea(linesToList("nombres.txt"),linesToList("apellidos.txt"),idNum)
+        querryList1.append(querry1)
 
+        
+        aeroId = choice(range(8))
 
-            querry2 = createEmpleadoAeropuerto(idNum,i+1, querry1[-2])
-            querryList2.append(querry2)
-
+        querry2 = createEmpleadoAerolinea(idNum,aeroId+1, querry1[-2])
+        querryList2.append(querry2)
+    
     return (querryList1,querryList2)
 
-def getEmpleadosAerolinea(numOfEmpleados):
-
-    querryList1 = []
-    querryList2 = []
-
-    idNum = 1500
-
+def getAviones(numAviones):
+    querryList = []
+    manufactList = linesToList("fabricantes.txt")
+    modelList = randPickNamesNoRepeat(linesToList("modelos.txt"), 80)
+    idNum = 0
     for i in range(8):
-        for j in range(numOfEmpleados):
+
+        for j in range(numAviones):
             idNum+=1
-            querry1 = createEmployeeAerolinea(linesToList("nombres.txt"),linesToList("apellidos.txt"),idNum)
-            querryList1.append(querry1)
+            querry = createAvion(idNum, choice(manufactList),i+1, choice(modelList))
+            querryList.append(querry)
+            print(querry,",")
+    return querryList
 
+def getTallerAndBodega(avionesList):
+    resTup = ([],[])
 
-            querry2 = createEmpleadoAerolinea(idNum,i+1, querry1[-2])
-            querryList2.append(querry2)
+    for i in avionesList:
+        if i[8] == "REP":
+            resTup[0].append(i)
+        elif i[8] == "INACT":
+            resTup[1].append(i)
+    
+    file = open("TallerYBodega.txt", "w+")
 
-    return (querryList1,querryList2)
-""" 
-file = open("empleadosAerolinea.txt", "w+")
+    for i in resTup:
+        for j in i:
+            file.write(str(j))
+            file.write(",\n")
 
-file.write("INSERT INTO Empleado VALUES\n")
+        file.write("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
+    
+    file.close()
 
-empAeropuerto = getEmpleadosAeropuerto(50) 
-empAerolinea = getEmpleadosAerolinea(35) 
+    return resTup
 
-for i in empAeropuerto[0]:
+def createFactura(idNum, idAero, code):
 
-    file.write(str(i))
-    file.write(",\n")
+    damage = choice(["Alas", "Motores","Ruedas", "Controles"])
 
-for i in empAerolinea[0]:
+    parts = damage
 
-    file.write(str(i))
-    file.write(",\n")
+    cost = choice([1000,2000,5000,10000,15000,50000])
 
-file.write("\n\n-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n\n")
+    date = "2019-"+ str(choice(range(12))+1)+ "-"+ str(choice(range(31))+ 1)
 
-file.write("INSERT INTO EmpleadoAeropuerto VALUES\n")
+    ind = choice(range(4))
 
-for i in empAeropuerto[1]:
+    iniTimes = ["01:00:00", "13:45:00", "17:00:00", "19:00:00"]
+    finTimes = ["05:30:00", "17:00:00", "23:00:00", "22:45:00"] 
 
-    file.write(str(i))
-    file.write(",\n")
+    time1 = iniTimes[ind]
+    time2 = finTimes[ind]
 
-file.write("\n\n-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n\n")
+    datetime1 = date+" "+time1
+    datetime2 = date+" "+time2
 
-file.write("INSERT INTO EmpleadoAerolinea VALUES\n")
+    return (idNum, idAero, code, parts, cost, datetime1, datetime2, damage)
 
-for i in empAerolinea[1]:
+def getBodega(avionesList):
 
-    file.write(str(i))
-    file.write(",\n")
+    while(avionesList != []):
 
+        for i in range(30): 
+            
+            posib = choice(range(10))
 
+            if posib < 5 and avionesList != []:
 
-file.close()
- """
-for i in getAeropuertosAndAerolineas()[1]:
+                avion = choice(avionesList)
+                avionesList.remove(avion)
+
+                querry = (avion[0], i+1)
+
+                print(querry,",")
+
+def getTaller(avionesList):
+
+    while(avionesList != []):
+
+            for i in range(30): 
+                
+                posib = choice(range(10))
+
+                if posib < 5 and avionesList != []:
+                    
+                    avion = choice(avionesList)
+                    avionesList.remove(avion)
+
+                    querry = createFactura(avion[0],i+1,avion[2])
+
+                    print(querry,",")
+
+empleadosAerolinea = getEmpleadosAeropuerto()
+
+for i in empleadosAerolinea[0]:
     print(i,",")
 
-
+for i in empleadosAerolinea[1]:
+    print(i,",")

@@ -1,0 +1,2 @@
+Id de EmpleadosAerolineas: 1-200
+Id de EmpleadosAeropuerto: 201-500
