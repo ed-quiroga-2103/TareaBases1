@@ -211,7 +211,7 @@ FROM(   SELECT E.*, "Aerolinea" AS Empleador
 --  Promedio de salario para los aeropuertos con mayor número de
 --  empleados.
 
-SELECT A.Nombre, AVG(E.Salario), COUNT(EA.IdEmpleado) AS NumEmpleados
+SELECT A.Nombre, AVG(E.Salario) AS PromedioSalarios, COUNT(EA.IdEmpleado) AS NumEmpleados
 FROM Empleado E
     INNER JOIN EmpleadoAeropuerto EA ON E.IdEmpleado = EA.IdEmpleado
     INNER JOIN Aeropuerto A ON A.IdAeropuerto = EA.IdAeropuerto 
@@ -233,7 +233,7 @@ ORDER BY Aviones DESC;
 -- Costo de reparación, modelo, fabricante y el código de un avión para una
 -- aerolínea perteneciente a un aeropuerto específico.
 
-SELECT T.Costo, A.Modelo, A.Fabricante, A.Codigo, AP.Nombre, AL.Nombre
+SELECT AP.Nombre, T.Costo, A.Modelo, A.Fabricante, A.Codigo, AL.Nombre
 FROM Taller T
     INNER JOIN Avion A ON T.IdAvion = A.IdAvion
     INNER JOIN Aerolinea AL ON AL.IdAerolinea = A.IdAerolinea
@@ -301,3 +301,6 @@ FROM Vuelo V
     INNER JOIN Aeropuerto AP ON AP.Localizacion = V.Destino
 GROUP BY AP.Nombre
 ORDER BY Horas DESC;
+                                                                                    
+
+
